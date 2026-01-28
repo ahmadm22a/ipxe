@@ -2189,10 +2189,37 @@ static inline void golan_bring_down(struct golan *golan)
 	DBGC(golan, "%s: end\n", __FUNCTION__);
 }
 
+static inline int golan_is_connectX9_and_above(uint16_t device_id)
+{
+	switch (device_id) {
+		case 0x1011:
+		case 0x1013:
+		case 0x1015:
+		case 0x1017:
+		case 0x1019:
+		case 0x101b:
+		case 0x101d:
+		case 0x101f:
+		case 0x1021:
+		case 0x1023:
+		case 0xa2d2:
+		case 0xa2d6:
+		case 0xa2dc:
+			return 0;
+		default:
+			return 1;
+	}
+}
+
 static int golan_set_link_speed ( struct golan *golan ){
 	mlx_status status;
 	int i = 0;
 	int utils_inited = 0;
+
+	if (golan_is_connectX9_and_above(golan->pci->id->device)) {
+		DBGC(golan, "%s: ConnectX-9 and above, skipping link speed set\n", __FUNCTION__);
+		return 0;
+	}
 
 	if ( ! golan->utils ) {
 		utils_inited = 1;
@@ -2645,9 +2672,12 @@ static struct pci_device_id golan_nics[] = {
 	PCI_ROM ( 0x15b3, 0x101d, "ConnectX-6DX", "ConnectX-6DX HCA driver, DevID 4125", 0 ),
 	PCI_ROM ( 0x15b3, 0x101f, "ConnectX-6Lx", "ConnectX-6LX HCA driver, DevID 4127", 0 ),
 	PCI_ROM ( 0x15b3, 0x1021, "ConnectX-7", "ConnectX-7 HCA driver, DevID 4129", 0 ),
+	PCI_ROM ( 0x15b3, 0x1023, "ConnectX-8", "ConnectX-8 HCA driver, DevID 4131", 0 ),
+	PCI_ROM ( 0x15b3, 0x1025, "ConnectX-9", "ConnectX-9 HCA driver, DevID 4133", 0 ),
 	PCI_ROM ( 0x15b3, 0xa2d2, "BlueField", "BlueField integrated ConnectX-5 network controller HCA driver, DevID 41682", 0 ),
 	PCI_ROM ( 0x15b3, 0xa2d6, "BlueField-2", "BlueField-2 network controller HCA driver, DevID 41686", 0 ),
 	PCI_ROM ( 0x15b3, 0xa2dc, "BlueField-3", "BlueField-3 network controller HCA driver, DevID 41692", 0 ),
+	PCI_ROM ( 0x15b3, 0xa2df, "BlueField-4", "BlueField-4 network controller HCA driver, DevID 41695", 0 ),
 };
 
 struct pci_driver golan_driver __pci_driver = {
