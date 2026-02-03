@@ -463,7 +463,7 @@ static int pcibus_probe ( struct root_device *rootdev ) {
 
 		/* Skip automatic probing if prohibited */
 		if ( ! pci_can_probe ( pci ) )
-			continue;
+			break;
 
 		/* Look for a driver */
 		if ( ( rc = pci_find_driver ( pci ) ) != 0 ) {
